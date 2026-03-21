@@ -10,12 +10,16 @@ public class FileService : IFileService
 {
     public async Task<string> SaveFileAsync(IFormFile file, string folderName)
     {
-        var folderPath = Path.Combine("wwwroot", folderName);
+        if (file == null || file.Length == 0)
+            throw new ArgumentException("File is empty");
+
+        var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", folderName);
 
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
-        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+        var extension = Path.GetExtension(file.FileName);
+        var fileName = $"{Guid.NewGuid()}{extension}";
 
         var filePath = Path.Combine(folderPath, fileName);
 
@@ -24,6 +28,7 @@ public class FileService : IFileService
             await file.CopyToAsync(stream);
         }
 
+        // return URL-friendly path
         return $"/{folderName}/{fileName}";
     }
 }

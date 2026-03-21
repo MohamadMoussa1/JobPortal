@@ -86,6 +86,10 @@ builder.Services.AddScoped<ICompanyService, CompanyService>();
 //job
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IJobService, JobService>();
+//application
+builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
+builder.Services.AddScoped<IJobApplicationService, JobApplicationService>();
+
 
 builder.Services.AddScoped<IFileService, FileService>();
 var app = builder.Build();

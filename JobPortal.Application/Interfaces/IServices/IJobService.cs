@@ -1,4 +1,5 @@
-﻿using JobPortal.Application.DTOs.JobDto;
+﻿using JobPortal.Application.DTOs.JobApplicationDto;
+using JobPortal.Application.DTOs.JobDto;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,4 +14,5 @@ public interface IJobService
     Task DeleteAsync(Guid userId, Guid jobId);
     // IJobService.cs
     Task<(IEnumerable<JobDto> Jobs, int TotalCount)> GetAllAsync(JobQueryParameters query);
+    
 }
