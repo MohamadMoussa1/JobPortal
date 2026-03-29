@@ -4,6 +4,7 @@ namespace JobPortal.API.Controllers;
 
 using JobPortal.Application.DTOs.ApplicantDto;
 using JobPortal.Application.Interfaces.IServices;
+using JobPortal.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
@@ -13,10 +14,12 @@ using System.Security.Claims;
 public class ApplicantController : ControllerBase
 {
     private readonly IApplicantService _service;
+    private readonly ResumeAnalyzerService _resumeAnalyzerService;
 
-    public ApplicantController(IApplicantService service)
+    public ApplicantController(IApplicantService service, ResumeAnalyzerService resumeAnalyzerService)
     {
         _service = service;
+        _resumeAnalyzerService = resumeAnalyzerService;
     }
 
     [HttpGet("me")]
@@ -46,5 +49,41 @@ public class ApplicantController : ControllerBase
         await _service.UpdateMyProfileAsync(Guid.Parse(userId), dto);
 
         return Ok("Profile updated successfully");
+    }
+
+
+    [HttpPost("cv/analyze")]
+    [Authorize(Roles = "Applicant")]
+    public async Task<IActionResult> AnalyzeResume(IFormFile file)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { message = "Please upload a CV file." });
+
+        // Validate file type
+        var allowedExtensions = new[] { ".pdf", ".docx" };
+        var extension = Path.GetExtension(file.FileName).ToLower();
+
+        if (!allowedExtensions.Contains(extension))
+            return BadRequest(new { message = "Only PDF and DOCX files are allowed." });
+
+        // Save to a temp location
+        var tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}{extension}");
+
+        try
+        {
+            await using (var stream = new FileStream(tempPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var result = await _resumeAnalyzerService.AnalyzeAsync(tempPath);
+            return Ok(result);
+        }
+        finally
+        {
+            // Always delete the temp file after analysis
+            if (System.IO.File.Exists(tempPath))
+                System.IO.File.Delete(tempPath);
+        }
     }
 }

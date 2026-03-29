@@ -3,6 +3,7 @@ using JobPortal.Application.Interfaces;
 using JobPortal.Application.Interfaces.IRepositories;
 using JobPortal.Application.Interfaces.IServices;
 using JobPortal.Application.Services;
+using JobPortal.Application.Settings;
 using JobPortal.Domain.Entities;
 using JobPortal.Infrastructure.Data;
 using JobPortal.Infrastructure.Persistence;
@@ -67,7 +68,16 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.Configure<GeminiSettings>(
+    builder.Configuration.GetSection("GeminiSettings"));
+// HTTP Client for Gemini
+builder.Services.AddHttpClient<IAIService, GeminiAIService>();
 
+// CV Text Extractor
+builder.Services.AddScoped<ICVTextExtractor, CVTextExtractor>();
+
+// Resume Analyzer Service
+builder.Services.AddScoped<ResumeAnalyzerService>();
 
 // ✅ Register handler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
