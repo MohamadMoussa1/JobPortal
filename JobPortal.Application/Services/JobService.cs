@@ -21,14 +21,14 @@ public class JobService : IJobService
 
     public async Task CreateAsync(Guid userId, CreateJobDto dto)
     {
-        // ✅ Validation (Business rules)
+        //  Validation (Business rules)
         if (dto.SalaryMin > dto.SalaryMax)
             throw new Exception("SalaryMin cannot be greater than SalaryMax");
         var company = await _companyRepository.GetByUserIdAsync(userId);
         if (company == null)
             throw new Exception("Company profile not found");
 
-        // ✅ Map DTO → Entity
+        //  Map DTO → Entity
         var job = new Job
         {
             Id = Guid.NewGuid(),
@@ -44,23 +44,23 @@ public class JobService : IJobService
             IsAvailable = true
         };
 
-        // ✅ Save
+        //  Save
         await _jobRepository.AddAsync(job);
         await _jobRepository.SaveChangesAsync();
     }
     //Get All Jobs related to this company
     public async Task<IEnumerable<JobDto>> GetCompanyJobsAsync(Guid userId)
     {
-        // ✅ Get company from user
+        //  Get company from user
         var company = await _companyRepository.GetByUserIdAsync(userId);
 
         if (company == null)
             throw new Exception("Company not found");
 
-        // ✅ Get jobs
+        //  Get jobs
         var jobs = await _jobRepository.GetByCompanyIdAsync(company.Id);
 
-        // ✅ Map to DTO
+        //  Map to DTO
         var result = jobs.Select(j => new JobDto
         {
             Id = j.Id,
@@ -80,23 +80,23 @@ public class JobService : IJobService
     //update specific job
     public async Task UpdateAsync(Guid userId, Guid jobId, UpdateJobDto dto)
     {
-        // ✅ Get company
+        //  Get company
         var company = await _companyRepository.GetByUserIdAsync(userId);
 
         if (company == null)
             throw new Exception("Company not found");
 
-        // ✅ Get job
+        //  Get job
         var job = await _jobRepository.GetByIdAsync(jobId);
 
         if (job == null)
             throw new Exception("Job not found");
 
-        // 🔐 SECURITY CHECK (CRITICAL)
+        //  SECURITY CHECK (CRITICAL)
         if (job.CompanyId != company.Id)
             throw new UnauthorizedAccessException("You cannot update this job");
 
-        // ✅ Partial Update
+        //  Partial Update
         if (dto.Title != null)
             job.Title = dto.Title;
 
@@ -112,7 +112,7 @@ public class JobService : IJobService
         if (dto.SalaryMax.HasValue)
             job.SalaryMax = dto.SalaryMax.Value;
 
-        // ✅ Validate after update
+        //  Validate after update
         if (job.SalaryMin > job.SalaryMax)
             throw new Exception("SalaryMin cannot be greater than SalaryMax");
 
@@ -129,21 +129,21 @@ public class JobService : IJobService
     }
     public async Task DeleteAsync(Guid userId, Guid jobId)
     {
-        // ✅ Get company
+        //  Get company
         var company = await _companyRepository.GetByUserIdAsync(userId);
         if (company == null)
             throw new Exception("Company not found");
 
-        // ✅ Get job
+        //  Get job
         var job = await _jobRepository.GetByIdAsync(jobId);
         if (job == null)
             throw new Exception("Job not found");
 
-        // 🔐 Ownership check
+        //  Ownership check
         if (job.CompanyId != company.Id)
             throw new UnauthorizedAccessException("You cannot delete this job");
 
-        // ✅ Delete
+        //  Delete
         await _jobRepository.DeleteAsync(job);
         await _jobRepository.SaveChangesAsync();
     }

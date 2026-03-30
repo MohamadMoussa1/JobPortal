@@ -58,7 +58,7 @@ public class CompanyService : ICompanyService
         if (!string.IsNullOrWhiteSpace(dto.Description))
             company.Description = dto.Description;
 
-        // 🔹 Handle Logo Upload
+        //  Handle Logo Upload
         if (dto.Logo != null)
         {
             var allowedTypes = new[] { ".jpg", ".png", ".jpeg" };

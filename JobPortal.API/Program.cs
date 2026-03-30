@@ -36,7 +36,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.Cookie.HttpOnly = true; // can’t be accessed by JS
     options.Cookie.SameSite = SameSiteMode.Strict;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // ✅ this is what you asked
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; //  this is what you asked
     options.LoginPath = "/api/auth/login";
     options.LogoutPath = "/api/auth/logout";
 })
@@ -78,11 +78,13 @@ builder.Services.AddScoped<ICVTextExtractor, CVTextExtractor>();
 
 // Resume Analyzer Service
 builder.Services.AddScoped<ResumeAnalyzerService>();
+// CV Enhancement Service
+builder.Services.AddScoped<CVEnhancementService>();
 
-// ✅ Register handler
+// Register handler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 
-// ✅ Replace default policy provider
+//  Replace default policy provider
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
 // Register repositories

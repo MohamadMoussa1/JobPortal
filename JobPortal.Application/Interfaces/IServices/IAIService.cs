@@ -8,4 +8,5 @@ namespace JobPortal.Application.Interfaces.IServices;
 public interface IAIService
 {
     Task<ResumeAnalysisResult> AnalyzeResumeAsync(string cvText);
+    Task<CVEnhancementResult> EnhanceCVAsync(string cvText, string jobDescription);
 }
