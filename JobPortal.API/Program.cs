@@ -3,6 +3,7 @@ using JobPortal.Application.Interfaces;
 using JobPortal.Application.Interfaces.IRepositories;
 using JobPortal.Application.Interfaces.IServices;
 using JobPortal.Application.Services;
+using JobPortal.Application.Settings;
 using JobPortal.Domain.Entities;
 using JobPortal.Infrastructure.Data;
 using JobPortal.Infrastructure.Persistence;
@@ -35,7 +36,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.Cookie.HttpOnly = true; // can’t be accessed by JS
     options.Cookie.SameSite = SameSiteMode.Strict;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // ✅ this is what you asked
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; //  this is what you asked
     options.LoginPath = "/api/auth/login";
     options.LogoutPath = "/api/auth/logout";
 })
@@ -67,12 +68,25 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.Configure<GeminiSettings>(
+    builder.Configuration.GetSection("GeminiSettings"));
+// HTTP Client for Gemini
+builder.Services.AddHttpClient<IAIService, GeminiAIService>();
 
+// CV Text Extractor
+builder.Services.AddScoped<ICVTextExtractor, CVTextExtractor>();
 
-// ✅ Register handler
+// Resume Analyzer Service
+builder.Services.AddScoped<ResumeAnalyzerService>();
+// CV Enhancement Service
+builder.Services.AddScoped<CVEnhancementService>();
+//cover letter
+builder.Services.AddScoped<CoverLetterService>();
+
+// Register handler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 
-// ✅ Replace default policy provider
+//  Replace default policy provider
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
 // Register repositories

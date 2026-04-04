@@ -44,7 +44,7 @@ public class ApplicantService : IApplicantService
         if (applicant == null)
             throw new Exception("Applicant profile not found");
 
-        // ✅ Partial Update Logic
+        //  Partial Update Logic
 
         if (!string.IsNullOrWhiteSpace(dto.Name))
             applicant.Name = dto.Name;
