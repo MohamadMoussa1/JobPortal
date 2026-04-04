@@ -9,4 +9,5 @@ public interface IAIService
 {
     Task<ResumeAnalysisResult> AnalyzeResumeAsync(string cvText);
     Task<CVEnhancementResult> EnhanceCVAsync(string cvText, string jobDescription);
+    Task<CoverLetterResult> GenerateCoverLetterAsync(string cvText,string jobTitle,string companyName,string jobDescription,string? hrName);
 }

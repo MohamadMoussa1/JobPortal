@@ -80,6 +80,8 @@ builder.Services.AddScoped<ICVTextExtractor, CVTextExtractor>();
 builder.Services.AddScoped<ResumeAnalyzerService>();
 // CV Enhancement Service
 builder.Services.AddScoped<CVEnhancementService>();
+//cover letter
+builder.Services.AddScoped<CoverLetterService>();
 
 // Register handler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
