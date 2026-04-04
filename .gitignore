@@ -10,6 +10,10 @@
 *.userosscache
 *.sln.docstates
 
+# Config (IMPORTANT)
+
+
+appsettings.json
 
 # Secrets
 .env
@@ -366,5 +370,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/JobPortal.API/appsettings.json
 /JobPortal.API/appsettings.json
