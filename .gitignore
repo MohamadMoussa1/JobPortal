@@ -14,7 +14,7 @@
 
 
 appsettings.json
-
+appsettings.*.json
 # Secrets
 .env
 .env.*

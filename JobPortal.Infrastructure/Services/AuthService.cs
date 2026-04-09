@@ -109,7 +109,7 @@ public class AuthService : IAuthService
         _httpContextAccessor.HttpContext!.Response.Cookies.Append("jwt", token, new CookieOptions
         {
             HttpOnly = true,
-            Secure = true,
+            Secure = false,
             SameSite = SameSiteMode.Strict,
             Expires = DateTime.UtcNow.AddHours(3)
         });

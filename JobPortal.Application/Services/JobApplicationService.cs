@@ -93,6 +93,7 @@ public class JobApplicationService : IJobApplicationService
             Id = x.Id,
             JobId = x.JobId,
             JobTitle = x.Job.Title, // from Include
+            CompanyName=x.Job.Company.Name,
             Cv = x.Cv,
             Status = x.Status.ToString()    ,
             AppliedAt = x.AppliedAt
@@ -116,9 +117,7 @@ public class JobApplicationService : IJobApplicationService
         if (application.Job.CompanyId != company.Id)
             throw new Exception("Unauthorized");
 
-        // 4. Validate status (optional but recommended)
-        if (application.Status != ApplicationStatus.Pending)
-            throw new Exception("Application already processed");
+        
 
         // 5. Update status
         application.Status =Enum.Parse<ApplicationStatus>(dto.Status, true);

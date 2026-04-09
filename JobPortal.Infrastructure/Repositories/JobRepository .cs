@@ -48,30 +48,46 @@ public class JobRepository : IJobRepository
     }
     public async Task<(IEnumerable<Job> Jobs, int TotalCount)> GetAllAsync(JobQueryParameters query)
     {
-        var jobsQuery = _context.Jobs.AsQueryable();
+        var jobsQuery = _context.Jobs.Include(x=> x.Company).AsQueryable();
 
         // Only available jobs
         jobsQuery = jobsQuery.Where(j => j.IsAvailable);
 
         // Optional filters
-        if(!string.IsNullOrEmpty(query.Title))
-            jobsQuery = jobsQuery.Where(j => j.Title.Contains(query.Title));    
+        // Title — case insensitive
+        if (!string.IsNullOrEmpty(query.Title))
+            jobsQuery = jobsQuery.Where(j =>
+                j.Title.ToLower().Contains(query.Title.ToLower()));
 
-        if(!string.IsNullOrEmpty(query.Description))
-            jobsQuery = jobsQuery.Where(j => j.Description.Contains(query.Description));
+        // CompanyName — case insensitive
+        if (!string.IsNullOrEmpty(query.CompanyName))
+            jobsQuery = jobsQuery.Where(j =>
+                j.Company.Name.ToLower().Contains(query.CompanyName.ToLower()));
 
+        // Description — case insensitive
+        if (!string.IsNullOrEmpty(query.Description))
+            jobsQuery = jobsQuery.Where(j =>
+                j.Description.ToLower().Contains(query.Description.ToLower()));
+
+        // Location — case insensitive
         if (!string.IsNullOrEmpty(query.Location))
-            jobsQuery = jobsQuery.Where(j => j.Location.Contains(query.Location));
+            jobsQuery = jobsQuery.Where(j =>
+                j.Location.ToLower().Contains(query.Location.ToLower()));
 
+        // Type — case insensitive
         if (!string.IsNullOrWhiteSpace(query.Type))
-            jobsQuery = jobsQuery.Where(j => j.Type.ToString() == query.Type);
+            jobsQuery = jobsQuery.Where(j =>
+                j.Type.ToString().ToLower() == query.Type.ToLower());
 
+        // MinSalary — no change needed (decimal comparison)
         if (query.MinSalary.HasValue)
-            jobsQuery = jobsQuery.Where(j => j.SalaryMin >= query.MinSalary.Value);
+            jobsQuery = jobsQuery.Where(j =>
+                j.SalaryMin >= query.MinSalary.Value);
 
+        // MaxSalary — no change needed (decimal comparison)
         if (query.MaxSalary.HasValue)
-            jobsQuery = jobsQuery.Where(j => j.SalaryMax <= query.MaxSalary.Value);
-
+            jobsQuery = jobsQuery.Where(j =>
+                j.SalaryMax <= query.MaxSalary.Value);
         // Total count before pagination
         var totalCount = await jobsQuery.CountAsync();
 

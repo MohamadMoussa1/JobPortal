@@ -156,6 +156,7 @@ public class JobService : IJobService
         {
             Id = j.Id,
             Title = j.Title,
+            CompanyName = j.Company.Name,
             Description = j.Description,
             Location = j.Location,
             SalaryMin = j.SalaryMin,

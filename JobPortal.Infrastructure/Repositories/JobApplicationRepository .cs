@@ -35,6 +35,7 @@ public class JobApplicationRepository : IJobApplicationRepository
     {
         return await _context.Applications
             .Include(x => x.Job) // IMPORTANT (to get JobTitle)
+            .Include(x=> x.Job.Company)
             .Where(x => x.ApplicantId == applicantId)
             .OrderByDescending(x => x.AppliedAt)
             .ToListAsync();
