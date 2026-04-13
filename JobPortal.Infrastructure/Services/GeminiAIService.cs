@@ -139,9 +139,22 @@ public class GeminiAIService : IAIService
 
         var url = $"https://generativelanguage.googleapis.com/v1beta/models/{_settings.Model}:generateContent?key={_settings.ApiKey}";
 
-        var response = await _httpClient.PostAsJsonAsync(url, requestBody);
-        response.EnsureSuccessStatusCode();
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = JsonContent.Create(requestBody)
+        };
 
+        _httpClient.DefaultRequestHeaders.Clear();
+
+        var response = await _httpClient.SendAsync(requestMessage);
+
+        // ← Add this instead of EnsureSuccessStatusCode
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException(
+                $"Gemini API error: {response.StatusCode} - {errorBody}");
+        }
         var responseBody = await response.Content.ReadAsStringAsync();
 
         try

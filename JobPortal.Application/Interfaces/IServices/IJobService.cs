@@ -1,4 +1,5 @@
-﻿using JobPortal.Application.DTOs.JobApplicationDto;
+﻿using JobPortal.Application.DTOs.common;
+using JobPortal.Application.DTOs.JobApplicationDto;
 using JobPortal.Application.DTOs.JobDto;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,10 @@ namespace JobPortal.Application.Interfaces.IServices;
 public interface IJobService
 {
     Task CreateAsync(Guid companyId, CreateJobDto dto);
-    Task<IEnumerable<JobDto>> GetCompanyJobsAsync(Guid userId);
+    Task<PagedResult<JobDto>> GetCompanyJobsAsync(Guid userId, JobQueryParameters query);
     Task UpdateAsync(Guid userId, Guid jobId, UpdateJobDto dto);
     Task DeleteAsync(Guid userId, Guid jobId);
     // IJobService.cs
-    Task<(IEnumerable<JobDto> Jobs, int TotalCount)> GetAllAsync(JobQueryParameters query);
+    Task<PagedResult<JobDto>> GetAllAsync(JobQueryParameters query);
     
 }

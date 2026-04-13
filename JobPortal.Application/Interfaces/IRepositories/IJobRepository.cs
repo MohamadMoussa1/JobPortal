@@ -10,7 +10,7 @@ public interface IJobRepository
 {
     Task AddAsync(Job job);
     Task SaveChangesAsync();
-    Task<IEnumerable<Job>> GetByCompanyIdAsync(Guid companyId);
+    Task<(IEnumerable<Job> Jobs, int TotalCount)> GetByCompanyIdAsync( Guid companyId,JobQueryParameters query);
     Task<Job?> GetByIdAsync(Guid id);
     Task DeleteAsync(Job job);
     Task<(IEnumerable<Job> Jobs, int TotalCount)> GetAllAsync(JobQueryParameters query);

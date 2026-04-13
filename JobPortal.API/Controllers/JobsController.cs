@@ -1,6 +1,7 @@
 ﻿using JobPortal.Application.DTOs.JobDto;
 using JobPortal.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -30,13 +31,13 @@ public class CompanyJobsController : ControllerBase
     }
     [Authorize(Roles = "Company")]
     [HttpGet("company/Alljobs")]
-    public async Task<IActionResult> GetMyJobs()
+    public async Task<IActionResult> GetMyJobs([FromQuery] JobQueryParameters query)
     {
         var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var jobs = await _jobService.GetCompanyJobsAsync(userId);
+        var result = await _jobService.GetCompanyJobsAsync(userId, query);
 
-        return Ok(jobs);
+        return Ok(result);
     }
     [Authorize(Roles = "Company")]
     [HttpPatch("company/update/{id}")]
@@ -62,14 +63,8 @@ public class CompanyJobsController : ControllerBase
     [HttpGet("applicant/jobs")]
     public async Task<IActionResult> GetAll([FromQuery] JobQueryParameters query)
     {
-        var (jobs, totalCount) = await _jobService.GetAllAsync(query);
+        var result = await _jobService.GetAllAsync(query);
 
-        return Ok(new
-        {
-            totalCount,
-            page = query.Page,
-            pageSize = query.PageSize,
-            jobs
-        });
+        return Ok(result);
     }
 }

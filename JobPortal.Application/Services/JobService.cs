@@ -1,4 +1,5 @@
-﻿using JobPortal.Application.DTOs.JobDto;
+﻿using JobPortal.Application.DTOs.common;
+using JobPortal.Application.DTOs.JobDto;
 using JobPortal.Application.Interfaces.IRepositories;
 using JobPortal.Application.Interfaces.IServices;
 using JobPortal.Domain.Entities;
@@ -49,22 +50,21 @@ public class JobService : IJobService
         await _jobRepository.SaveChangesAsync();
     }
     //Get All Jobs related to this company
-    public async Task<IEnumerable<JobDto>> GetCompanyJobsAsync(Guid userId)
+    public async Task<PagedResult<JobDto>> GetCompanyJobsAsync(Guid userId, JobQueryParameters query)
     {
-        //  Get company from user
         var company = await _companyRepository.GetByUserIdAsync(userId);
 
         if (company == null)
             throw new Exception("Company not found");
 
-        //  Get jobs
-        var jobs = await _jobRepository.GetByCompanyIdAsync(company.Id);
+        var (jobs, totalCount) = await _jobRepository.GetByCompanyIdAsync(
+            company.Id, query);
 
-        //  Map to DTO
         var result = jobs.Select(j => new JobDto
         {
             Id = j.Id,
             Title = j.Title,
+            CompanyName = j.Company.Name,
             Description = j.Description,
             Location = j.Location,
             SalaryMin = j.SalaryMin,
@@ -75,7 +75,13 @@ public class JobService : IJobService
             CreatedAt = j.CreatedAt
         });
 
-        return result;
+        return new PagedResult<JobDto>
+        {
+            Jobs = result,
+            TotalCount = totalCount,
+            Page = query.Page,
+            PageSize = query.PageSize
+        };
     }
     //update specific job
     public async Task UpdateAsync(Guid userId, Guid jobId, UpdateJobDto dto)
@@ -147,7 +153,7 @@ public class JobService : IJobService
         await _jobRepository.DeleteAsync(job);
         await _jobRepository.SaveChangesAsync();
     }
-    public async Task<(IEnumerable<JobDto> Jobs, int TotalCount)> GetAllAsync(JobQueryParameters query)
+    public async Task<PagedResult<JobDto>> GetAllAsync(JobQueryParameters query)
     {
         var (jobs, totalCount) = await _jobRepository.GetAllAsync(query);
 
@@ -167,7 +173,13 @@ public class JobService : IJobService
             CreatedAt = j.CreatedAt
         });
 
-        return (result, totalCount);
+        return new PagedResult<JobDto>
+        {
+            Jobs = result,
+            TotalCount = totalCount,
+            Page = query.Page,
+            PageSize = query.PageSize
+        };
     }
 
 }

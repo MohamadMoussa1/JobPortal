@@ -72,8 +72,12 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.Configure<GeminiSettings>(
     builder.Configuration.GetSection("GeminiSettings"));
 // HTTP Client for Gemini
-builder.Services.AddHttpClient<IAIService, GeminiAIService>();
-
+builder.Services.AddHttpClient<IAIService, GeminiAIService>()
+    .ConfigureHttpClient(client =>
+    {
+        client.DefaultRequestHeaders.Clear();
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
+    });
 // CV Text Extractor
 builder.Services.AddScoped<ICVTextExtractor, CVTextExtractor>();
 
